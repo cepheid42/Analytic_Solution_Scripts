@@ -42,8 +42,8 @@ def multi_animated_lines(data, nt, title, save=False):
         p1, = plt.plot(data[0][i, :], 'r')
         p2, = plt.plot(data[1][i, :], 'b--')
         p3, = plt.plot(data[2][i, :], 'g')
-        # plt.legend()
         plts.append([p1, p2, p3])  # ... but save the line artist for the animation
+        # plts.append([p1, p2])
     ani = animation.ArtistAnimation(fig, plts, interval=50, repeat=False)  # run the animation
     if save:
         ani.save(title, writer='ffmpeg')
