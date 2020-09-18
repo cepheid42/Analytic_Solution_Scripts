@@ -35,6 +35,41 @@ def animated_line(data, nt, title, save=False):
     plt.show()
 
 
+def tranverse_wave_plot(E, B, cs, e_dir, title, save=False):
+    xs = np.linspace(0, cs.nx * cs.dx, E.shape[1])
+    b_dir = 'By' if e_dir == 'z' else 'Bz'
+
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    ax.view_init(elev=20., azim=-60)
+
+    plts = []  # get ready to populate this list the Line artists to be plotted
+    for i in range(cs.nt):
+        if e_dir == 'z':
+            ys1 = np.zeros(E.shape[1])
+            zs1 = E[i, :]
+            ys2 = B[i, :]
+            zs2 = ys1
+        else:
+            ys1 = E[i, :]
+            zs1 = np.zeros(E.shape[1])
+            ys2 = zs1
+            zs2 = B[i, :]
+
+        pE, = ax.plot(xs=xs, ys=ys1, zs=zs1, zdir='z', color='r')  # this is how you'd plot a single line...
+        pB, = ax.plot(xs=xs, ys=ys2, zs=zs2, zdir='z', color='b')
+        plts.append([pE, pB])  # ... but save the line artist for the animation
+
+    ani = animation.ArtistAnimation(fig, plts, interval=50, repeat=False)  # run the animation
+    if save:
+        ani.save(title + '.mp4')  # optionally save it to a file
+    plt.legend(['E' + e_dir, b_dir])
+    plt.show()
+
+
 def multi_animated_lines(data, nt, title, save=False):
     fig = plt.figure()
     plts = []
