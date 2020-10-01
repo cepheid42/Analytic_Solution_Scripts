@@ -5,7 +5,7 @@ from implicit import *
 
 
 class Constants:
-    def __init__(self):
+    def __init__(self, x_res, num_l, cfl):
         self.c = 299792458   # m/s
         self.mu = 1.25663706e-6
         self.eps = 8.85418782e-12
@@ -15,9 +15,9 @@ class Constants:
         self.w = 2 * np.pi * self.f   # omega
         self.imp0 = 377.0        # impedance of free space
 
-        self.x_res = 64
-        self.num_l = 2
-        self.cfl = 1.0
+        self.x_res = x_res
+        self.num_l = num_l
+        self.cfl = cfl
 
         self.nx = self.x_res * self.num_l + 1
         self.dx = (self.num_l * self.l) / (self.nx - 1)
@@ -54,18 +54,21 @@ def run_sim(cs, file1, file2, plot=False, save=False):
 
 
 def main():
-    consts = Constants()
+    exp_consts = Constants(16, 2, 1.0)
+    imp_consts = Constants(32, 2, 2.0)
     save = False
     # Filenames to save animated plots
     e_filename = 'Ez_overlayed.mp4'
     b_filename = 'By_overlayed.mp4'
 
-    Ez_ass, By_ass = analytic_solution(consts)
-    Ez_exp, By_exp = explicit_yee(consts)
-    Ez_imp, By_imp = implicit_solution(consts)
+    Ez_ass, By_ass = analytic_solution(exp_consts)
+    Ez_exp, By_exp = explicit_yee(exp_consts)
+    Ez_imp, By_imp = implicit_solution(imp_consts)
 
-    multi_animated_lines([Ez_ass, Ez_exp, Ez_imp], consts.nt, e_filename, save=save)
-    multi_animated_lines([By_ass, By_exp, By_imp], consts.nt, b_filename, save=save)
+    low_nt = min(exp_consts.nt, imp_consts.nt)
+
+    multi_animated_lines([Ez_ass, Ez_exp, Ez_imp], low_nt, e_filename, save=save)
+    multi_animated_lines([By_ass, By_exp, By_imp], low_nt, b_filename, save=save)
 
 
 if __name__ == '__main__':
